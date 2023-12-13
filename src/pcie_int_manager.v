@@ -99,7 +99,7 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     //==========================================================================
 
     //====================================================
-    // The names of our registers
+    // The names and indicies of our registers
     //====================================================
     localparam REG_IRQ_PENDING        =  0;
     localparam REG_IRQ_ACK            =  1;
@@ -108,6 +108,7 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     localparam REG_COUNTERS           = 32;
     localparam REG_LAST_VALID_COUNTER = REG_COUNTERS + IRQ_COUNT - 1;
     localparam REG_LAST_COUNTER       = REG_COUNTERS + 31;
+    //====================================================
 
     // The state of our AXI-register read/write state machines
     reg[2:0] read_state, write_state;
@@ -133,14 +134,13 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     // This is a "global enable/disable" for interrupts
     reg global_irq_enable;
 
-    // An interrupt is pending any time the following things are all true:
+    // An interrupt is pending any time the following things are both true:
     //   (1) Its counter is non-zero
     //   (2) Its bit in irq_mask is 1
-    //   (3) global_irq_enable is 1
     wire[IRQ_COUNT-1:0] pending_irq;
     genvar k;
     for (k=0; k<IRQ_COUNT; k=k+1) begin
-        assign pending_irq[k] = (irq_counter[k] != 0) & irq_mask[k] & global_irq_enable;
+        assign pending_irq[k] = (irq_counter[k] != 0) & irq_mask[k];
     end
 
     // These bits are similar to IRQ_IN, but are set via AXI register
@@ -169,6 +169,10 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     //
     // It's important to the design of this interrupt controller that we never
     // miss an interrupt when we're counting them.
+    //
+    // We saturate at 32'hFFFF_FFFE instead of 32'hFFFF_FFFF because the code
+    // that reads and clears this counter may add one to it, and we don't want
+    // it to overflow when that happens.
     //==========================================================================
     always @(posedge clk) begin
         for (i=0; i<IRQ_COUNT; i=i+1) begin
@@ -176,7 +180,7 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
                 irq_counter[i] <= 0;
             else if (clear_irq[i])
                 irq_counter[i] <= irq_in[i];
-            else
+            else if (irq_counter[i] < 32'hFFFF_FFFE)
                 irq_counter[i] <= irq_counter[i] + irq_in[i];
         end
     end
@@ -220,7 +224,7 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
         end else case (ism_state)
 
             // If there are pending interrupts the host hasn't been notified about...
-            0:  if (newly_pending | make_irq_req) begin
+            0:  if (global_irq_enable & (newly_pending | make_irq_req)) begin
                     make_irq_req <= 0;
                     IRQ_REQ      <= 1;
                     ism_state    <= 1;
