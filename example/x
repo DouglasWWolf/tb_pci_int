@@ -1,0 +1,18 @@
+source cabletest_api.sh
+
+is_busy
+stop
+
+is_busy
+sleep .01
+
+
+is_busy
+sleep .01
+
+is_busy
+sleep .01
+
+is_busy
+sleep .01
+
