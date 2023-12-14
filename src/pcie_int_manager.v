@@ -12,13 +12,9 @@
 Usage:
 
    This module is an AXI4-Lite slave that allows an application to generate or clear
-   PCIe interrupts using the legacy interrupt mechanism.
+   PCIe interrupts using the legacy (INTA) interrupt mechanism.
 
-   We support up to 32 interrupt sources, number 0 thru 31
-
-   To use:
-
-   <<<<<<<<<<<<<<<<<<  FILL THIS IN !!!!!!!!!!!!!!!!! >>>>>>>>>>>>>>>>>>>>
+   We support up to 32 interrupt sources, numbered 0 thru 31
 */
 
 
@@ -138,17 +134,11 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
         assign pending_irq[k] = (irq_counter[k] != 0);
     end
 
-    // The set of IRQs that must be cleared before we'll deassert IRQ_REQ
-    reg[IRQ_COUNT-1:0] current_irq_set;
-
     // These bits are similar to IRQ_IN, but are set via AXI register
     reg[IRQ_COUNT-1:0] axi_irq_in;
 
     // This is a bitmap of which IRQ lines are high, regardless of source
     wire[IRQ_COUNT-1:0] irq_in = (IRQ_IN | axi_irq_in) & irq_mask;
-
-    // The state of the "interrupt state machine"
-    reg[1:0] ism_state;
 
     // "Clear IRQ", set by writing to a register
     reg[IRQ_COUNT-1:0] wclear_irq;
@@ -194,46 +184,28 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     // on IRQ_REQ requires us to wait for a corresponding IRQ_ACK before
     // changing the state of IRQ_REQ again.
     //--------------------------------------------------------------------------
-    
-    // This is a latched version of the IRQ_ACK signal
-    reg irq_ack_latched;
+    wire pending_irq_req = (pending_irq != 0) & global_irq_enable;    
+    reg  ism_state;
     //==========================================================================    
     always @(posedge clk) begin
 
-        // This latches the IRQ_ACK signal
-        if (IRQ_ACK) irq_ack_latched <= 1;
-
-        // When an interrupt is cleared, it's removed from our current_irq_set
-        current_irq_set <= current_irq_set & ~clear_irq;
 
         // If we're in reset, initialize important registers
         if (resetn == 0) begin
             ism_state       <= 0;
-            current_irq_set <= 0;
             IRQ_REQ         <= 0;
 
         // Otherwise, if we're not in reset...
         end else case (ism_state)
 
-            // If there are pending interrupts, assert IRQ_REQ
-            0:  if (global_irq_enable & pending_irq) begin
-                    current_irq_set  <= pending_irq;
-                    irq_ack_latched  <= 0;
-                    IRQ_REQ          <= 1;
-                    ism_state        <= 1;
+            0:  if (IRQ_REQ   != pending_irq_req) begin
+                    IRQ_REQ   <= pending_irq_req;
+                    ism_state <= 1;
                 end
 
-            // We will deassert IRQ_REQ only after:
-            //     (1) We've received the IRQ_ACK from the PCI controller
-            // and (2) The current set of interrupts have all been serviced
-            1:  if ((IRQ_ACK | irq_ack_latched) & (current_irq_set == 0)) begin
-                    IRQ_REQ   <= 0;
-                    ism_state <= 2;
-                end
-
-            // After the PCIe bridge acknowledges that we've deasserted
-            // IRQ_REQ, it's safe to asssert it again
-            2:  if (IRQ_ACK) ism_state <= 0;
+            // After the PCIe bridge acknowledges our change
+            // to IRQ_REQ, it's safe to change it again
+            1:  if (IRQ_ACK) ism_state <= 0;
 
         endcase
 
@@ -316,8 +288,8 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
             // Examine the register index to decide what to do
             case(ashi_rindx)
 
-                REG_IRQ_PENDING:    ashi_rdata <= current_irq_set;
-                REG_IRQ_ACK:        ashi_rdata <= current_irq_set;
+                REG_IRQ_PENDING:    ashi_rdata <= pending_irq;
+                REG_IRQ_ACK:        ashi_rdata <= pending_irq;
                 REG_IRQ_MASK:       ashi_rdata <= irq_mask;
                 REG_GLOB_ENABLE:    ashi_rdata <= global_irq_enable;
 
