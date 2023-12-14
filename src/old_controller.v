@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 //====================================================================================
 //                        ------->  Revision History  <------
 //====================================================================================
@@ -29,7 +31,8 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
 
     output[IRQ_COUNT-1:0] dbg_pending_irq,
     output[31:0] dbg_counter0,
-
+    output dbg_newly_pending,
+    output dbg_make_irq_req,
 
     // We raise this line to ask the PCIe bridge to generate an interrupt
     output reg IRQ_REQ,
@@ -131,21 +134,20 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     // This is a "global enable/disable" for interrupts
     reg global_irq_enable;
 
-    // An interrupt is pending whenver its counter is greater than zero
+    // An interrupt is pending any time the following things are both true:
+    //   (1) Its counter is non-zero
+    //   (2) Its bit in irq_mask is 1
     wire[IRQ_COUNT-1:0] pending_irq;
     genvar k;
     for (k=0; k<IRQ_COUNT; k=k+1) begin
-        assign pending_irq[k] = (irq_counter[k] != 0);
+        assign pending_irq[k] = (irq_counter[k] != 0) & irq_mask[k];
     end
-
-    // The set of IRQs that must be cleared before we'll deassert IRQ_REQ
-    reg[IRQ_COUNT-1:0] current_irq_set;
 
     // These bits are similar to IRQ_IN, but are set via AXI register
     reg[IRQ_COUNT-1:0] axi_irq_in;
 
     // This is a bitmap of which IRQ lines are high, regardless of source
-    wire[IRQ_COUNT-1:0] irq_in = (IRQ_IN | axi_irq_in) & irq_mask;
+    wire[IRQ_COUNT-1:0] irq_in = IRQ_IN | axi_irq_in;
 
     // The state of the "interrupt state machine"
     reg[1:0] ism_state;
@@ -195,48 +197,55 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
     // changing the state of IRQ_REQ again.
     //--------------------------------------------------------------------------
     
-    // This is a latched version of the IRQ_ACK signal
-    reg irq_ack_latched;
+    // Which interrupts were pending during the previous clock cycle?
+    reg[IRQ_COUNT-1:0] prior_pending;
+    
+    // This is high when there are newly pending interrupts on this clock cycle
+    wire newly_pending = ((pending_irq & ~prior_pending) != 0);
+    
+    // This will be high if we need to generate an IRQ REQ to the PCI bridge
+    reg  make_irq_req;
+
     //==========================================================================    
     always @(posedge clk) begin
 
-        // This latches the IRQ_ACK signal
-        if (IRQ_ACK) irq_ack_latched <= 1;
-
-        // When an interrupt is cleared, it's removed from our current_irq_set
-        current_irq_set <= current_irq_set & ~clear_irq;
+        // If there are new pending interrupts, we need to 
+        // generate an IRQ_REQ
+        if (newly_pending) make_irq_req <= 1;
 
         // If we're in reset, initialize important registers
         if (resetn == 0) begin
-            ism_state       <= 0;
-            current_irq_set <= 0;
-            IRQ_REQ         <= 0;
-
+            ism_state     <= 0;
+            IRQ_REQ       <= 0;
+            prior_pending <= 0;
+            make_irq_req  <= 0;
+        
         // Otherwise, if we're not in reset...
         end else case (ism_state)
 
-            // If there are pending interrupts, assert IRQ_REQ
-            0:  if (global_irq_enable & pending_irq) begin
-                    current_irq_set  <= pending_irq;
-                    irq_ack_latched  <= 0;
-                    IRQ_REQ          <= 1;
-                    ism_state        <= 1;
+            // If there are pending interrupts the host hasn't been notified about...
+            0:  if (global_irq_enable & (newly_pending | make_irq_req)) begin
+                    make_irq_req <= 0;
+                    IRQ_REQ      <= 1;
+                    ism_state    <= 1;
                 end
 
-            // We will deassert IRQ_REQ only after:
-            //     (1) We've received the IRQ_ACK from the PCI controller
-            // and (2) The current set of interrupts have all been serviced
-            1:  if ((IRQ_ACK | irq_ack_latched) & (current_irq_set == 0)) begin
+            // When we receive the first IRQ_ACK, lower IRQ_REQ
+            1:  if (IRQ_ACK) begin
                     IRQ_REQ   <= 0;
                     ism_state <= 2;
                 end
 
-            // After the PCIe bridge acknowledges that we've deasserted
-            // IRQ_REQ, it's safe to asssert it again
+            // After we see the 2nd IRQ_ACK, it's safe to assert
+            // IRQ_REQ again
             2:  if (IRQ_ACK) ism_state <= 0;
 
         endcase
 
+        // In the next cycle, "prior_pending" is whatever "pending_irq"
+        // was on this clock-cycle, but with the bits for the recently
+        // clear IRQs turned off.
+        prior_pending <= pending_irq & ~clear_irq;
     end
     //==========================================================================
 
@@ -316,8 +325,8 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
             // Examine the register index to decide what to do
             case(ashi_rindx)
 
-                REG_IRQ_PENDING:    ashi_rdata <= current_irq_set;
-                REG_IRQ_ACK:        ashi_rdata <= current_irq_set;
+                REG_IRQ_PENDING:    ashi_rdata <= pending_irq;
+                REG_IRQ_ACK:        ashi_rdata <= pending_irq;
                 REG_IRQ_MASK:       ashi_rdata <= irq_mask;
                 REG_GLOB_ENABLE:    ashi_rdata <= global_irq_enable;
 
@@ -403,7 +412,8 @@ module pcie_int_manager#(parameter IRQ_COUNT=1)
 
 assign dbg_pending_irq = pending_irq;
 assign dbg_counter0 = irq_counter[0];
-
+assign dbg_newly_pending = newly_pending;
+assign dbg_make_irq_req  = make_irq_req;
 endmodule
 
 

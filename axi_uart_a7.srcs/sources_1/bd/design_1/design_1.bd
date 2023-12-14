@@ -24,11 +24,11 @@
       "led_driver_2": "",
       "system_ila": "",
       "IRQ": "",
-      "sim_pci_bridge": "",
       "timer_0": "",
       "timer_1": "",
       "timer_2": "",
-      "pcie_int_manager": ""
+      "pcie_int_manager": "",
+      "sim_pci_bridge": ""
     },
     "interface_ports": {
       "UART": {
@@ -1174,57 +1174,6 @@
           }
         }
       },
-      "sim_pci_bridge": {
-        "vlnv": "xilinx.com:module_ref:sim_pci_bridge:1.0",
-        "xci_name": "design_1_sim_pci_bridge_0_0",
-        "xci_path": "ip/design_1_sim_pci_bridge_0_0/design_1_sim_pci_bridge_0_0.xci",
-        "inst_hier_path": "sim_pci_bridge",
-        "reference_info": {
-          "ref_type": "hdl",
-          "ref_name": "sim_pci_bridge",
-          "boundary_crc": "0x0"
-        },
-        "ports": {
-          "clk": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "resetn",
-                "value_src": "constant"
-              },
-              "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "ip_prop"
-              },
-              "PHASE": {
-                "value": "0.0",
-                "value_src": "ip_prop"
-              },
-              "CLK_DOMAIN": {
-                "value": "/system_clock_clk_out1",
-                "value_src": "ip_prop"
-              }
-            }
-          },
-          "resetn": {
-            "type": "rst",
-            "direction": "I",
-            "parameters": {
-              "POLARITY": {
-                "value": "ACTIVE_LOW",
-                "value_src": "constant"
-              }
-            }
-          },
-          "IRQ_REQ": {
-            "direction": "I"
-          },
-          "IRQ_ACK": {
-            "direction": "O"
-          }
-        }
-      },
       "timer_0": {
         "vlnv": "xilinx.com:module_ref:timer:1.0",
         "xci_name": "design_1_timer_0_0",
@@ -2355,12 +2304,6 @@
             "left": "31",
             "right": "0"
           },
-          "dbg_newly_pending": {
-            "direction": "O"
-          },
-          "dbg_make_irq_req": {
-            "direction": "O"
-          },
           "IRQ_REQ": {
             "direction": "O"
           },
@@ -2385,6 +2328,57 @@
                 "value_src": "ip_prop"
               }
             }
+          }
+        }
+      },
+      "sim_pci_bridge": {
+        "vlnv": "xilinx.com:module_ref:sim_pci_bridge:1.0",
+        "xci_name": "design_1_sim_pci_bridge_0_0",
+        "xci_path": "ip/design_1_sim_pci_bridge_0_0/design_1_sim_pci_bridge_0_0.xci",
+        "inst_hier_path": "sim_pci_bridge",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "sim_pci_bridge",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "resetn",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "/system_clock_clk_out1",
+                "value_src": "ip_prop"
+              }
+            }
+          },
+          "resetn": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "constant"
+              }
+            }
+          },
+          "IRQ_REQ": {
+            "direction": "I"
+          },
+          "IRQ_ACK": {
+            "direction": "O"
           }
         }
       }
@@ -2440,6 +2434,20 @@
       }
     },
     "nets": {
+      "IRQ_ACK": {
+        "ports": [
+          "sim_pci_bridge/IRQ_ACK",
+          "system_ila/probe5",
+          "pcie_int_manager/IRQ_ACK"
+        ]
+      },
+      "IRQ_REQ": {
+        "ports": [
+          "pcie_int_manager/IRQ_REQ",
+          "system_ila/probe4",
+          "sim_pci_bridge/IRQ_REQ"
+        ]
+      },
       "IRQ_dout": {
         "ports": [
           "IRQ/dout",
@@ -2456,18 +2464,6 @@
         "ports": [
           "pcie_int_manager/dbg_counter0",
           "system_ila/probe3"
-        ]
-      },
-      "dbg_make_irq_req": {
-        "ports": [
-          "pcie_int_manager/dbg_make_irq_req",
-          "system_ila/probe5"
-        ]
-      },
-      "dbg_newly_pending": {
-        "ports": [
-          "pcie_int_manager/dbg_newly_pending",
-          "system_ila/probe6"
         ]
       },
       "dbg_pending_irq": {
@@ -2500,13 +2496,6 @@
           "led_2"
         ]
       },
-      "pcie_int_manager_IRQ_REQ": {
-        "ports": [
-          "pcie_int_manager/IRQ_REQ",
-          "system_ila/probe4",
-          "sim_pci_bridge/IRQ_REQ"
-        ]
-      },
       "proc_sys_reset_0_peripheral_aresetn": {
         "ports": [
           "system_reset/peripheral_aresetn",
@@ -2515,17 +2504,11 @@
           "led_driver_0/resetn",
           "led_driver_2/resetn",
           "led_driver_1/resetn",
-          "sim_pci_bridge/resetn",
           "timer_0/resetn",
           "timer_1/resetn",
           "timer_2/resetn",
-          "pcie_int_manager/resetn"
-        ]
-      },
-      "sim_pci_bridge_0_IRQ_ACK": {
-        "ports": [
-          "sim_pci_bridge/IRQ_ACK",
-          "pcie_int_manager/IRQ_ACK"
+          "pcie_int_manager/resetn",
+          "sim_pci_bridge/resetn"
         ]
       },
       "system_clock_clk_100mhz": {
@@ -2539,11 +2522,11 @@
           "led_driver_2/clk",
           "led_driver_1/clk",
           "system_ila/clk",
-          "sim_pci_bridge/clk",
           "timer_0/clk",
           "timer_1/clk",
           "timer_2/clk",
-          "pcie_int_manager/clk"
+          "pcie_int_manager/clk",
+          "sim_pci_bridge/clk"
         ]
       },
       "system_reset_interconnect_aresetn": {

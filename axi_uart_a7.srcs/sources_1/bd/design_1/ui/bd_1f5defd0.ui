@@ -12,56 +12,54 @@
    "No Loops_Layers":"/clk_in1_0_1:true|/system_reset_interconnect_aresetn:true|/ext_reset_in_0_1:true|/axi_uart_interrupt:true|/proc_sys_reset_0_peripheral_aresetn:true|/system_clock_clk_100mhz:true|/axi_uart_bridge/axi_uart_interrupt:true|",
    "No Loops_Layout":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
-preplace port UART -pg 1 -lvl 6 -x 1630 -y 1060 -defaultsOSRD
-preplace port GPIO_SW -pg 1 -lvl 6 -x 1630 -y 1150 -defaultsOSRD
+preplace port UART -pg 1 -lvl 6 -x 1690 -y 1060 -defaultsOSRD
+preplace port GPIO_SW -pg 1 -lvl 6 -x 1690 -y 1150 -defaultsOSRD
 preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 200 -defaultsOSRD
 preplace port port-id_CPU_RESETN -pg 1 -lvl 0 -x 0 -y 300 -defaultsOSRD
-preplace port port-id_led_0 -pg 1 -lvl 6 -x 1630 -y 720 -defaultsOSRD
-preplace port port-id_led_1 -pg 1 -lvl 6 -x 1630 -y 580 -defaultsOSRD
-preplace port port-id_led_2 -pg 1 -lvl 6 -x 1630 -y 860 -defaultsOSRD
+preplace port port-id_led_0 -pg 1 -lvl 6 -x 1690 -y 720 -defaultsOSRD
+preplace port port-id_led_1 -pg 1 -lvl 6 -x 1690 -y 580 -defaultsOSRD
+preplace port port-id_led_2 -pg 1 -lvl 6 -x 1690 -y 860 -defaultsOSRD
 preplace inst system_clock -pg 1 -lvl 1 -x 130 -y 200 -defaultsOSRD -pinDir clk_in1 left -pinY clk_in1 0L -pinDir clk_100mhz right -pinY clk_100mhz 0R
 preplace inst system_reset -pg 1 -lvl 2 -x 430 -y 260 -swap {0 2 1 3 4 5 6 7 9 8} -defaultsOSRD -pinDir slowest_sync_clk left -pinY slowest_sync_clk 0L -pinDir ext_reset_in left -pinY ext_reset_in 40L -pinDir aux_reset_in left -pinY aux_reset_in 20L -pinDir mb_debug_sys_rst left -pinY mb_debug_sys_rst 60L -pinDir dcm_locked left -pinY dcm_locked 80L -pinDir mb_reset right -pinY mb_reset 0R -pinBusDir bus_struct_reset right -pinBusY bus_struct_reset 20R -pinBusDir peripheral_reset right -pinBusY peripheral_reset 40R -pinBusDir interconnect_aresetn right -pinBusY interconnect_aresetn 140R -pinBusDir peripheral_aresetn right -pinBusY peripheral_aresetn 60R
 preplace inst axi_interconnect -pg 1 -lvl 3 -x 760 -y 380 -swap {80 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 100 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 60 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 40 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 20 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 0 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121} -defaultsOSRD -pinDir S00_AXI right -pinY S00_AXI 640R -pinDir M00_AXI right -pinY M00_AXI 770R -pinDir M01_AXI right -pinY M01_AXI 500R -pinDir M02_AXI right -pinY M02_AXI 340R -pinDir M03_AXI right -pinY M03_AXI 200R -pinDir M04_AXI right -pinY M04_AXI 0R -pinDir aclk left -pinY aclk 0L -pinDir aresetn left -pinY aresetn 20L
-preplace inst axi_uart_bridge -pg 1 -lvl 4 -x 1140 -y 1020 -defaultsOSRD -pinDir M_AXI left -pinY M_AXI 0L -pinDir UART right -pinY UART 40R -pinDir aclk left -pinY aclk 20L -pinDir aresetn left -pinY aresetn 40L
-preplace inst axi_gpio_inputs -pg 1 -lvl 4 -x 1140 -y 1150 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir GPIO right -pinY GPIO 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 20L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 40L
-preplace inst led_driver_0 -pg 1 -lvl 5 -x 1510 -y 720 -swap {1 2 0 3} -defaultsOSRD -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt left -pinY interrupt 0L -pinDir led right -pinY led 0R
-preplace inst led_driver_1 -pg 1 -lvl 5 -x 1510 -y 580 -swap {1 2 0 3} -defaultsOSRD -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt left -pinY interrupt 0L -pinDir led right -pinY led 0R
-preplace inst led_driver_2 -pg 1 -lvl 5 -x 1510 -y 860 -defaultsOSRD -pinDir clk left -pinY clk 0L -pinDir resetn left -pinY resetn 20L -pinDir interrupt left -pinY interrupt 40L -pinDir led right -pinY led 0R
-preplace inst system_ila -pg 1 -lvl 5 -x 1510 -y 340 -swap {0 6 7 1 2 3 4 5} -defaultsOSRD -pinDir clk left -pinY clk 0L -pinBusDir probe0 left -pinBusY probe0 120L -pinBusDir probe1 left -pinBusY probe1 140L -pinBusDir probe2 left -pinBusY probe2 20L -pinBusDir probe3 left -pinBusY probe3 40L -pinBusDir probe4 left -pinBusY probe4 60L -pinBusDir probe5 left -pinBusY probe5 80L -pinBusDir probe6 left -pinBusY probe6 100L
+preplace inst axi_uart_bridge -pg 1 -lvl 4 -x 1160 -y 1020 -defaultsOSRD -pinDir M_AXI left -pinY M_AXI 0L -pinDir UART right -pinY UART 40R -pinDir aclk left -pinY aclk 20L -pinDir aresetn left -pinY aresetn 40L
+preplace inst axi_gpio_inputs -pg 1 -lvl 4 -x 1160 -y 1150 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir GPIO right -pinY GPIO 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 20L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 40L
+preplace inst led_driver_0 -pg 1 -lvl 5 -x 1570 -y 720 -swap {1 2 0 3} -defaultsOSRD -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt left -pinY interrupt 0L -pinDir led right -pinY led 0R
+preplace inst led_driver_1 -pg 1 -lvl 5 -x 1570 -y 580 -swap {1 2 0 3} -defaultsOSRD -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt left -pinY interrupt 0L -pinDir led right -pinY led 0R
+preplace inst led_driver_2 -pg 1 -lvl 5 -x 1570 -y 860 -defaultsOSRD -pinDir clk left -pinY clk 0L -pinDir resetn left -pinY resetn 20L -pinDir interrupt left -pinY interrupt 40L -pinDir led right -pinY led 0R
+preplace inst system_ila -pg 1 -lvl 5 -x 1570 -y 340 -swap {0 5 6 1 3 2 7 4} -defaultsOSRD -pinDir clk left -pinY clk 0L -pinBusDir probe0 left -pinBusY probe0 100L -pinBusDir probe1 left -pinBusY probe1 120L -pinBusDir probe2 left -pinBusY probe2 20L -pinBusDir probe3 left -pinBusY probe3 60L -pinBusDir probe4 left -pinBusY probe4 40L -pinBusDir probe5 left -pinBusY probe5 140L -pinBusDir probe6 left -pinBusY probe6 80L
 preplace inst IRQ -pg 1 -lvl 3 -x 760 -y 60 -defaultsOSRD -pinBusDir In0 right -pinBusY In0 0R -pinBusDir In1 right -pinBusY In1 20R -pinBusDir In2 right -pinBusY In2 40R -pinBusDir dout right -pinBusY dout 60R
+preplace inst timer_0 -pg 1 -lvl 4 -x 1160 -y 720 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
+preplace inst timer_1 -pg 1 -lvl 4 -x 1160 -y 580 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
+preplace inst timer_2 -pg 1 -lvl 4 -x 1160 -y 880 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
+preplace inst pcie_int_manager -pg 1 -lvl 4 -x 1160 -y 340 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 21 26 22 23 24 25 20} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 20L -pinDir clk left -pinY clk 60L -pinDir resetn left -pinY resetn 100L -pinBusDir dbg_pending_irq right -pinBusY dbg_pending_irq 0R -pinBusDir dbg_counter0 right -pinBusY dbg_counter0 20R -pinDir IRQ_REQ right -pinY IRQ_REQ 40R -pinDir IRQ_ACK left -pinY IRQ_ACK 80L -pinBusDir IRQ_IN left -pinBusY IRQ_IN 40L
 preplace inst sim_pci_bridge -pg 1 -lvl 3 -x 760 -y 240 -swap {0 1 3 2} -defaultsOSRD -pinDir clk left -pinY clk 0L -pinDir resetn left -pinY resetn 20L -pinDir IRQ_REQ right -pinY IRQ_REQ 20R -pinDir IRQ_ACK right -pinY IRQ_ACK 0R
-preplace inst timer_0 -pg 1 -lvl 4 -x 1140 -y 720 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
-preplace inst timer_1 -pg 1 -lvl 4 -x 1140 -y 580 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
-preplace inst timer_2 -pg 1 -lvl 4 -x 1140 -y 880 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinDir interrupt right -pinY interrupt 0R
-preplace inst pcie_int_manager -pg 1 -lvl 4 -x 1140 -y 360 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 21 28 22 23 26 25 24 27 20} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 20L -pinDir clk left -pinY clk 60L -pinDir resetn left -pinY resetn 100L -pinBusDir dbg_pending_irq right -pinBusY dbg_pending_irq 0R -pinBusDir dbg_counter0 right -pinBusY dbg_counter0 20R -pinDir dbg_newly_pending right -pinY dbg_newly_pending 80R -pinDir dbg_make_irq_req right -pinY dbg_make_irq_req 60R -pinDir IRQ_REQ right -pinY IRQ_REQ 40R -pinDir IRQ_ACK left -pinY IRQ_ACK 80L -pinBusDir IRQ_IN left -pinBusY IRQ_IN 40L
 preplace netloc IRQ_dout 1 3 1 970 120n
 preplace netloc clk_in1_0_1 1 0 1 NJ 200
-preplace netloc dbg_counter0 1 4 1 N 380
-preplace netloc dbg_make_irq_req 1 4 1 N 420
-preplace netloc dbg_newly_pending 1 4 1 N 440
-preplace netloc dbg_pending_irq 1 4 1 N 360
+preplace netloc dbg_counter0 1 4 1 1350 360n
+preplace netloc dbg_pending_irq 1 4 1 1390 340n
 preplace netloc ext_reset_in_0_1 1 0 2 NJ 300 NJ
 preplace netloc led_driver_0_led 1 5 1 NJ 720
 preplace netloc led_driver_1_led 1 5 1 NJ 580
 preplace netloc led_driver_2_led 1 5 1 NJ 860
-preplace netloc pcie_int_manager_IRQ_REQ 1 3 2 910 520 1350
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 630 320 890 820 1410
-preplace netloc sim_pci_bridge_0_IRQ_ACK 1 3 1 950 240n
-preplace netloc system_clock_clk_100mhz 1 1 4 240 200 610 180 930 300 1370
+preplace netloc IRQ_REQ 1 3 2 NJ 260 1330
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 630 320 890 820 1470
+preplace netloc IRQ_ACK 1 3 2 910 520 1390J
+preplace netloc system_clock_clk_100mhz 1 1 4 240 200 610 180 930 280 1410
 preplace netloc system_reset_interconnect_aresetn 1 2 1 N 400
-preplace netloc timer_0_interrupt 1 3 2 NJ 60 1390
-preplace netloc timer_1_interrupt 1 3 2 NJ 80 1310
-preplace netloc timer_2_interrupt 1 3 2 NJ 100 1330
+preplace netloc timer_0_interrupt 1 3 2 NJ 60 1450
+preplace netloc timer_1_interrupt 1 3 2 NJ 80 1370
+preplace netloc timer_2_interrupt 1 3 2 NJ 100 1430
 preplace netloc axi_gpio_inputs_GPIO 1 4 2 NJ 1150 NJ
 preplace netloc axi_interconnect_M00_AXI 1 3 1 N 1150
 preplace netloc axi_interconnect_M01_AXI 1 3 1 N 880
 preplace netloc axi_interconnect_M02_AXI 1 3 1 N 720
 preplace netloc axi_interconnect_M03_AXI 1 3 1 N 580
-preplace netloc axi_interconnect_M04_AXI 1 3 1 N 380
+preplace netloc axi_interconnect_M04_AXI 1 3 1 950 360n
 preplace netloc hier_0_M_AXI 1 3 1 N 1020
 preplace netloc hier_0_UART 1 4 2 NJ 1060 NJ
-levelinfo -pg 1 0 130 430 760 1140 1510 1630
-pagesize -pg 1 -db -bbox -sgen -150 0 1750 1250
+levelinfo -pg 1 0 130 430 760 1160 1570 1690
+pagesize -pg 1 -db -bbox -sgen -150 0 1810 1250
 ",
    "No Loops_ScaleFactor":"0.6384",
    "No Loops_TopLeft":"-349,2",
